@@ -1,17 +1,3 @@
-"""Attribution-based explanation: Integrated Gradients and gradient × input.
-
-We explain a chosen prediction (hate / target / reason) by attributing it to
-the **input tokens of the current comment**, computed through the model's
-input embeddings:
-
-* **Integrated Gradients** (Sundararajan et al., 2017) — average gradients
-  along the straight path between a baseline embedding (PAD) and the actual
-  embedding, multiplied by ``(embedding − baseline)``.
-* **gradient × input** — single-point approximation (cheaper, noisier).
-
-This is a *post-hoc attribution* method. It is NOT attention weights, and it
-is NOT the supervised rationale head (see README "Evidence extraction").
-"""
 
 from __future__ import annotations
 
@@ -42,7 +28,6 @@ class AttributionResult:
     context_used: bool
 
 
-# --- small helpers --------------------------------------------------------------
 
 
 def _head_logits(outputs: Dict[str, torch.Tensor], head: str) -> torch.Tensor:
@@ -93,11 +78,7 @@ def _forward_with_current_embeds(
     attention_mask: torch.Tensor,
     context_kwargs: Dict[str, Any],
 ) -> Dict[str, torch.Tensor]:
-    """Forward pass where the current comment uses the given embeddings.
 
-    ``input_ids`` is intentionally not forwarded: transformers (v5+)
-    requires exactly one of ``input_ids`` / ``inputs_embeds``.
-    """
     if getattr(model, "architecture", "") == "baseline":
         return model(attention_mask=attention_mask, current_inputs_embeds=embeds)
     return model(
@@ -105,10 +86,6 @@ def _forward_with_current_embeds(
         current_inputs_embeds=embeds,
         **context_kwargs,
     )
-
-
-# --- main entry point --------------------------------------------------------------
-
 
 def compute_attributions(
     model,
@@ -123,12 +100,7 @@ def compute_attributions(
     max_length: int = 128,
     device: Optional[torch.device] = None,
 ) -> AttributionResult:
-    """Compute per-token attributions of ``current_text`` for one head.
 
-    ``target_index=None`` explains the currently predicted class; pass an
-    index to explain a specific class instead (e.g. the ``hate`` class even
-    when the model predicted ``normal``).
-    """
     if method not in SUPPORTED_METHODS:
         raise ValueError(f"Unknown attribution method: {method!r}")
     model.eval()

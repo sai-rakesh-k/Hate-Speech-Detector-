@@ -1,9 +1,4 @@
-"""Tokenizer wrapper and subword alignment utilities (Hugging Face tokenizers).
 
-The wrapper keeps the pipeline explicit: raw text → input ids, attention
-mask and token strings, plus helpers to map word-level rationale labels onto
-subword tokens.
-"""
 
 from __future__ import annotations
 
@@ -23,14 +18,12 @@ class TokenizerWrapper:
     def __init__(self, tokenizer: Any):
         self.tokenizer = tokenizer
 
-    # --- construction ---------------------------------------------------------
     @classmethod
     def from_pretrained(cls, name_or_path: str, **kwargs: Any) -> "TokenizerWrapper":
         from transformers import AutoTokenizer
 
         return cls(AutoTokenizer.from_pretrained(name_or_path, **kwargs))
 
-    # --- properties -------------------------------------------------------------
     @property
     def vocab_size(self) -> int:
         return int(self.tokenizer.vocab_size)
@@ -99,16 +92,7 @@ def align_rationales_to_subwords(
     rationale_labels: Sequence[int],
     max_length: int = 128,
 ) -> List[int]:
-    """Align word-level rationale labels (0/1 per whitespace token of ``text``)
-    to the tokenizer's subword tokens.
 
-    Every subword inherits the label of the word it belongs to; special tokens
-    and padding are 0. When the rationale list is shorter than the text, the
-    missing words are treated as 0 (never invented).
-
-    Uses the fast tokenizer's offset mapping when available, otherwise a
-    ``##``-continuation heuristic.
-    """
     rationale = [int(v) for v in rationale_labels]
 
     if tokenizer.is_fast:

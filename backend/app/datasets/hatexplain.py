@@ -1,24 +1,3 @@
-"""Adapter for the HateXplain dataset (primary dataset).
-
-Sources
--------
-* https://github.com/hate-alert/HateXplain  (original corpus)
-* https://huggingface.co/datasets/Hate-speech-CNERG/hatexplain  (HF mirror)
-
-Schema (original ``dataset.json`` records)
-------------------------------------------
-* ``post_tokens``  – tokenised tweet text
-* ``annotators``   – ``[{"label": "hatespeech"|"offensive"|"normal",
-                        "target": ["African", ...], ...}, ...]``
-* ``rationales``   – per-annotator token-level 0/1 flags aligned to ``post_tokens``
-* ``post_id``      – record id (the file is a mapping ``post_id -> record``)
-
-What HateXplain provides: hate/offensive/normal labels (majority vote over
-annotators), target communities, and token-level rationales.
-
-What it does NOT provide: conversational context and reason categories.
-Those fields stay ``None`` — they are never invented.
-"""
 
 from __future__ import annotations
 
@@ -68,7 +47,6 @@ def merge_rationales(
 
 
 class HateXplainDataset:
-    """Adapter exposing HateXplain records as :class:`UnifiedExample` objects."""
 
     name = "hatexplain"
 
@@ -87,11 +65,7 @@ class HateXplainDataset:
         split: str = "unspecified",
         keep_ids: Optional[Sequence[str]] = None,
     ) -> "HateXplainDataset":
-        """Load the original ``dataset.json`` (a list of records).
 
-        ``keep_ids`` optionally restricts the records (e.g. a split defined by
-        ``post_id_divisions.json``).
-        """
         with open(path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
         if isinstance(data, dict):
@@ -132,7 +106,6 @@ class HateXplainDataset:
         )
         return cls([dict(record) for record in hf_dataset], split=split)
 
-    # --- conversion --------------------------------------------------------------
     def to_unified(self) -> List[UnifiedExample]:
         return [self._convert(record, index) for index, record in enumerate(self.records)]
 

@@ -1,10 +1,3 @@
-"""Deterministic builder for the project's structured reasoning output.
-
-Combines prediction + confidence + target + reason + evidence + context_used
-into one object. Everything is assembled from model outputs and attribution
-results — no generated text. Untrained/unavailable heads are reported
-explicitly (``*_available: false``) instead of being fabricated.
-"""
 
 from __future__ import annotations
 
@@ -24,13 +17,7 @@ def build_explanation(
     evidence_available: bool = False,
     reasoning: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Assemble the unified structured explanation object.
 
-    ``hate`` / ``target`` / ``reason`` are head prediction dicts
-    (``{"label", "confidence", "probabilities"}``) or ``None`` when the head
-    is unavailable/untrained. ``evidence`` items may be :class:`EvidenceSpan`
-    objects or already-dict shaped.
-    """
     evidence_items: List[Dict[str, object]] = []
     for item in evidence or []:
         if isinstance(item, EvidenceSpan):

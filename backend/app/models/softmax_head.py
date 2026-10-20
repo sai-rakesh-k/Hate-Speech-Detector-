@@ -1,5 +1,3 @@
-"""Generic softmax classification head (shared base for target/reason heads)."""
-
 from __future__ import annotations
 
 from typing import Any, Dict, List, Sequence
@@ -9,7 +7,6 @@ import torch.nn as nn
 
 
 class SoftmaxClassificationHead(nn.Module):
-    """Linear layer over the final representation with softmax decoding."""
 
     def __init__(self, input_dim: int, labels: Sequence[str]):
         super().__init__()

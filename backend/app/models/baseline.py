@@ -1,9 +1,3 @@
-"""BERT baseline (Experiment 1): ``[CLS]`` → hate classifier. No context.
-
-Purpose: compare "BERT only" against the proposed context-aware model
-(README "Baseline vs proposed system").
-"""
-
 from __future__ import annotations
 
 from typing import Any, Dict, Optional

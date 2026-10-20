@@ -1,11 +1,3 @@
-"""Collators: convert batches of :class:`UnifiedExample` into model tensors.
-
-* :class:`MultitaskCollator` – tokenizes the current comment (and optional
-  context) and prepares all task labels. Missing labels use ``-100``
-  (``IGNORE_INDEX``) so losses skip them — no fake supervision.
-* :class:`ContrastivePairCollator` – wraps the base collator and additionally
-  prepares positive/negative context tensors for InfoNCE training.
-"""
 
 from __future__ import annotations
 
@@ -43,7 +35,6 @@ def build_label_maps(
 
 
 class MultitaskCollator:
-    """Tokenize a batch of examples into tensors for the full model."""
 
     def __init__(
         self,
@@ -138,12 +129,6 @@ class MultitaskCollator:
 
 
 class ContrastivePairCollator:
-    """Wraps :class:`MultitaskCollator` and adds contrastive context tensors.
-
-    Positive context = the example's own preceding comment.
-    Negative context = a preceding comment drawn from ``negative_pool``
-    (sampled with a seedable RNG; call :meth:`set_epoch` to vary across epochs).
-    """
 
     def __init__(
         self,

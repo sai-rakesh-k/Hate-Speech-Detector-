@@ -1,24 +1,3 @@
-"""Adapter for the Counter Context corpus (conversation-context dataset).
-
-Paper: "Hate Speech and Counter Speech Detection: Conversational Context Does
-Matter" — Xinchen Yu, Eduardo Blanco, Lingzi Hong (NAACL 2022).
-Corpus: https://github.com/xinchenyu/counter_context
-
-Files: ``data/gold/{train,val,test}.jsonl`` and ``data/silver/{train,val}.jsonl``.
-
-Record schema (verified from the repository)::
-
-    {"idx": int, "label": "0"|"1"|"2", "context": str, "target": str}
-
-IMPORTANT naming quirk: here ``context`` is the *preceding comment* and
-``target`` is the *current/reply comment being classified*. ``target`` is NOT
-a hate-target-group annotation.
-
-The corpus has no target-group and no rationale annotations — those remain
-``None`` in the unified format. See README for how it is used for
-context-dependent classification and contrastive experiments.
-"""
-
 from __future__ import annotations
 
 import json
@@ -34,7 +13,6 @@ from app.datasets.unified import UnifiedExample
 
 
 class CounterContextDataset:
-    """Adapter exposing Counter Context records as :class:`UnifiedExample` objects."""
 
     name = "counter_context"
 
@@ -51,7 +29,6 @@ class CounterContextDataset:
     def __len__(self) -> int:
         return len(self.records)
 
-    # --- constructors ----------------------------------------------------------
     @classmethod
     def from_jsonl(
         cls,
@@ -67,7 +44,6 @@ class CounterContextDataset:
                     records.append(json.loads(line))
         return cls(records, split=split, label_map=label_map)
 
-    # --- conversion --------------------------------------------------------------
     def to_unified(self) -> List[UnifiedExample]:
         examples: List[UnifiedExample] = []
         for index, record in enumerate(self.records):
@@ -106,15 +82,6 @@ def build_contrastive_pairs(
     strategy: str = "shuffled_context",
     seed: int = 42,
 ) -> List[Dict[str, str]]:
-    """Build (current, positive_context, negative_context) contrastive pairs.
-
-    ``shuffled_context``: the positive context is the example's real preceding
-    comment; the contrasting (negative) context is the preceding comment of a
-    random *other* example. This follows the project design: the model should
-    learn that swapping the context changes the interpretation of the comment.
-
-    Examples without context are skipped. Returns a list of dicts.
-    """
     if strategy != "shuffled_context":
         raise ValueError(f"Unknown contrastive negative strategy: {strategy!r}")
     rng = random.Random(seed)

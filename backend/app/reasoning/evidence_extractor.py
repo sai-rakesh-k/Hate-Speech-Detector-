@@ -1,15 +1,3 @@
-"""Convert token attributions into ranked, readable evidence spans.
-
-Pipeline (project spec §12):
-
-1. take per-token attribution scores for the explained prediction
-2. rank / threshold tokens (positive attributions support the prediction)
-3. merge adjacent tokens
-4. decode subword pieces back into readable phrases
-5. return the top-k spans
-
-Every span corresponds to an **actual input span** — no generated text.
-"""
 
 from __future__ import annotations
 

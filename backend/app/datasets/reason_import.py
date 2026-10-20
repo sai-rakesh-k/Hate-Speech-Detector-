@@ -1,35 +1,3 @@
-"""Import custom reason annotations into the project's unified JSONL format.
-
-Why this exists
----------------
-The reason head is trained **only on real annotations** (see README,
-"Supervising the reason head"). The standard splits in this repository
-(HateXplain, Counter Context) contain no reason labels, so this module lets
-you plug in your own annotation file and produce training-ready data:
-
-* **standalone** — every annotation becomes a ``UnifiedExample`` with
-  ``reason_label`` set (backs a reason-only training run), or
-* **merge** — annotation labels are attached to the examples of an existing
-  processed split (matched by ``id`` first, then by normalized text), so a
-  single run can train the hate/evidence heads and the reason head together.
-
-Annotation file format (JSONL; CSV with the same columns also accepted)::
-
-    {"text": "Those people are disgusting and should leave.",
-     "reason": "exclusion",
-     "id": "optional-match-id",
-     "context": "optional previous message",
-     "target": "optional target label"}
-
-``text`` and ``reason`` are required. ``reason`` is normalised
-(case/space/hyphen insensitive, e.g. ``"Incitement to violence"`` becomes
-``incitement_to_violence``) and must be one of the canonical categories.
-
-Nothing is fabricated or guessed: invalid rows are skipped and reported,
-merge conflicts are never overwritten, and unmatched annotations are only
-added to the dataset when explicitly requested.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -48,14 +16,11 @@ from app.datasets.unified import (
 _CANONICAL_REASON_SET = frozenset(CANONICAL_REASON)
 
 
-# --- normalisation ------------------------------------------------------------
 
 
 def normalize_reason(value: Any) -> Optional[str]:
     """Normalise a raw reason string to its canonical form, or ``None``.
 
-    Case, surrounding whitespace, hyphens and internal spaces are ignored:
-    ``"Incitement to violence"`` → ``incitement_to_violence``.
     """
     if value is None:
         return None
@@ -89,7 +54,6 @@ def _normalized_text(text: str) -> str:
     return " ".join(str(text).split())
 
 
-# --- data containers ------------------------------------------------------------
 
 
 @dataclass
@@ -144,9 +108,6 @@ class StrictImportError(Exception):
     def __init__(self, report: ImportReport) -> None:
         super().__init__("strict import failed")
         self.report = report
-
-
-# --- loading --------------------------------------------------------------------
 
 
 def _annotation_from_mapping(

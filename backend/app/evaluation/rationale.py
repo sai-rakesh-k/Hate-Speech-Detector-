@@ -1,10 +1,3 @@
-"""Rationale / evidence metrics (token-level, against gold rationales).
-
-Used to evaluate both the supervised token-level rationale head and the
-attribution-based evidence extractor against HateXplain rationales. Token-level
-precision/recall/F1 is reported; a high attribution score on its own is NOT
-treated as proof of correctness (README "Evaluation").
-"""
 
 from __future__ import annotations
 

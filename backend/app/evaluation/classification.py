@@ -17,10 +17,6 @@ def classification_metrics(
     labels: Optional[Sequence[str]] = None,
 ) -> Dict[str, Any]:
     """Accuracy, macro/weighted precision-recall-F1, per-class F1, confusion matrix.
-
-    ``labels`` is the readable class-name list; when omitted, raw class ids
-    are used as names. Metrics that cannot be computed for the given data are
-    omitted (e.g. ROC-AUC needs scores, not hard labels) — nothing is guessed.
     """
     y_true = [int(value) for value in y_true]
     y_pred = [int(value) for value in y_pred]

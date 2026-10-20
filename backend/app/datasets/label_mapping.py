@@ -1,20 +1,9 @@
-"""Canonical label vocabulary and per-dataset mapping layers.
-
-Datasets annotate different label sets (HateXplain: hate/offensive/normal plus
-target communities; Counter Context: hate/counter/neither). This module maps
-raw dataset labels onto the internal canonical vocabulary.
-
-Nothing is invented here: a label that cannot be mapped is returned as
-``(None, raw_value)`` so callers can keep the raw value in ``metadata`` and
-decide explicitly what to do with it.
-"""
 
 from __future__ import annotations
 
 from collections import Counter
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-# --- canonical vocabularies ---------------------------------------------------
 
 CANONICAL_HATE = ("hate", "offensive", "normal")
 CANONICAL_TARGET = (
@@ -39,7 +28,6 @@ CANONICAL_REASON = (
     "other",
 )
 
-# --- HateXplain ----------------------------------------------------------------
 
 HATEXPLAIN_HATE_MAP: Dict[str, str] = {
     "hatespeech": "hate",
@@ -49,10 +37,6 @@ HATEXPLAIN_HATE_MAP: Dict[str, str] = {
     "normal": "normal",
 }
 
-#: Best-effort map from HateXplain's target community strings to the canonical
-#: target categories. Extend this when you inspect the real dataset — unknown
-#: values are NOT guessed; they fall back to None and are preserved in
-#: ``example.metadata['unmapped_targets']``.
 HATEXPLAIN_TARGET_MAP: Dict[str, str] = {
     # race
     "african": "race",
@@ -199,14 +183,6 @@ def map_hatexplain_target(raw: Optional[str]) -> Tuple[Optional[str], Optional[s
     return (canonical, None) if canonical else (None, raw)
 
 
-# --- Counter Context -------------------------------------------------------------
-
-#: Default mapping from the corpus label ids to internal labels.
-#: Verified against the NAACL 2022 paper "Hate Speech and Counter Speech
-#: Detection: Conversational Context Does Matter" (Yu, Blanco & Hong): the
-#: published class shares (Hate ~28%, Neutral ~49%, Counter-hate ~23% across
-#: the 6,846-pair corpus) match ids "0" / "1" / "2" in that order, so the
-#: mapping is 0=hate speech, 1=neutral, 2=counter(-hate) speech.
 COUNTER_CONTEXT_DEFAULT_LABEL_MAP: Dict[str, str] = {
     "0": "hate_speech",
     "1": "neither",

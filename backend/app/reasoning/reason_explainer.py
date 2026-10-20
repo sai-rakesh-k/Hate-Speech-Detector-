@@ -1,24 +1,3 @@
-"""Deterministic reason explanation layer.
-
-After the model predicts a reason category and the attribution stage extracts
-evidence spans, this module connects the two with fixed, auditable templates:
-
-    reason + target + evidence  →  {summary, details, grounded_in}
-
-Design rules (see README "Reason explanation"):
-
-* **Deterministic** — no generative model, no free-form text generation.
-* **Grounded** — an explanation only uses the predicted reason, the predicted
-  target, and the evidence spans that were actually extracted. It never adds
-  information that is not present in those fields.
-* **Honest** — it describes the classification and the attribution result; it
-  does NOT claim to know the author's intent and does NOT claim that the
-  context *caused* the prediction.
-
-Templates are configurable: edit :data:`REASON_TEMPLATES` below, or drop a
-``configs/reason_templates.yaml`` file into the backend with the same keys
-(its entries are merged over the defaults).
-"""
 
 from __future__ import annotations
 

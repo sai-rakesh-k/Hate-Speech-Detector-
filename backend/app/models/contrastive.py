@@ -1,13 +1,3 @@
-"""Contrastive learning components (InfoNCE) — **training only**.
-
-The contrastive objective teaches the model that the interpretation of a
-comment depends on its context: the context-aware representation formed with
-the *correct* preceding comment should be closer to the comment-only anchor
-than the representation formed with a *contrasting* context.
-
-IMPORTANT: contrastive learning is not performed at inference time — inference
-only produces the context-aware representation.
-"""
 
 from __future__ import annotations
 
@@ -32,19 +22,6 @@ class ContrastiveProjection(nn.Module):
 
 
 class InfoNCELoss(nn.Module):
-    r"""InfoNCE-style contrastive loss with cosine similarity.
-
-    .. math::
-
-        L = -\log \frac{\exp(\mathrm{sim}(a, p)/\tau)}
-                          {\exp(\mathrm{sim}(a, p)/\tau)
-                           + \sum_i \exp(\mathrm{sim}(a, n_i)/\tau)}
-
-    ``a`` is the anchor, ``p`` the positive candidate, ``n_i`` the contrasting
-    candidates; all vectors are L2-normalised (cosine similarity). The
-    temperature :math:`\tau` is configurable.
-    """
-
     def __init__(self, temperature: float = 0.07):
         super().__init__()
         if temperature <= 0:
@@ -59,7 +36,6 @@ class InfoNCELoss(nn.Module):
     ) -> torch.Tensor:
         """
         Parameters
-        ----------
         anchor:    [B, D]        comment-only representation
         positive:  [B, D]        representation with the correct context
         negatives: [B, N, D]     representations with contrasting contexts

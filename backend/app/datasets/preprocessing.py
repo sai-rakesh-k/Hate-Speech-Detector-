@@ -1,17 +1,4 @@
-"""Light-weight, conservative text preprocessing.
 
-Design principles
------------------
-* Keep information that matters for hate-speech detection: punctuation,
-  emojis, negation, word order, casing.
-* Only normalise what is clearly noise: URLs, user mentions, letter floods,
-  whitespace and unicode variants.
-* Everything is deterministic and dependency-free so it can be unit tested
-  in isolation.
-
-The output is still *the user's text* — nothing here paraphrases meaning or
-removes punctuation/emojis (they carry signal for hate-speech detection).
-"""
 
 from __future__ import annotations
 
@@ -19,7 +6,6 @@ import re
 import unicodedata
 from typing import Mapping, Optional
 
-# --- regexes ------------------------------------------------------------------
 
 _URL_RE = re.compile(r"https?://\S+|www\.\S+", re.IGNORECASE)
 _MENTION_RE = re.compile(r"(?<!\w)@[\w.]{1,30}\b")

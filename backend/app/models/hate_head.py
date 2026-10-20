@@ -1,14 +1,3 @@
-"""Hate / offensive / normal classification head.
-
-Two modes:
-
-* ``multiclass`` (default) – softmax over the configured label set
-  (HateXplain: ``hate`` / ``offensive`` / ``normal``). Multiclass labels are
-  never silently collapsed into binary.
-* ``binary`` – single logit + sigmoid with a configurable threshold; this
-  must be configured explicitly.
-"""
-
 from __future__ import annotations
 
 from typing import Any, Dict, List, Sequence

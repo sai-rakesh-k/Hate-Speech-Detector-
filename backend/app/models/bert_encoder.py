@@ -1,8 +1,3 @@
-"""Shared BERT encoder.
-
-One set of BERT weights encodes **both** the current comment and the previous
-context (weight sharing — see README, "Why is the encoder shared?").
-"""
 
 from __future__ import annotations
 
@@ -16,12 +11,9 @@ from app.datasets.tokenizer import TokenizerWrapper
 
 class BertEncoder(nn.Module):
     """Wrapper around a Hugging Face BERT model.
-
-    ``freeze_mode``:
-
-    * ``full``    – all BERT weights fine-tuned
-    * ``frozen``  – BERT weights frozen (only the behavioural heads train)
-    * ``partial`` – embeddings + the bottom ``frozen_layers`` layers frozen
+    * ``full``    all BERT weights fine-tuned
+    * ``frozen``  BERT weights frozen (only the behavioural heads train)
+    * ``partial`` embeddings + the bottom ``frozen_layers`` layers frozen
     """
 
     def __init__(
@@ -40,7 +32,6 @@ class BertEncoder(nn.Module):
         self.frozen_layers = int(frozen_layers)
         self._apply_freeze()
 
-    # --- constructors -----------------------------------------------------------
     @classmethod
     def from_pretrained(
         cls, model_name: str, freeze_mode: str = "full", frozen_layers: int = 0
@@ -62,7 +53,6 @@ class BertEncoder(nn.Module):
         freeze_mode: str = "full",
         frozen_layers: int = 0,
     ) -> "BertEncoder":
-        """Small randomly initialised BERT — for tests/dev without downloads."""
         from transformers import BertConfig, BertModel
 
         config = BertConfig(
@@ -82,7 +72,6 @@ class BertEncoder(nn.Module):
     def model_name(self) -> str:
         return str(getattr(self.bert.config, "_name_or_path", "") or "unknown")
 
-    # --- freezing ------------------------------------------------------------------
     def _apply_freeze(self) -> None:
         if self.freeze_mode == "frozen":
             for parameter in self.bert.parameters():
@@ -95,7 +84,6 @@ class BertEncoder(nn.Module):
                 for parameter in layer.parameters():
                     parameter.requires_grad = False
 
-    # --- forward ---------------------------------------------------------------------
     def forward(
         self,
         input_ids: Optional[torch.Tensor] = None,
@@ -125,7 +113,7 @@ class BertEncoder(nn.Module):
     def get_input_embeddings(self) -> nn.Module:
         return self.bert.get_input_embeddings()  # type: ignore[attr-defined]
 
-    # --- debugging helper ---------------------------------------------------------------
+    # debugging helper 
     @torch.no_grad()
     def encode_text(
         self,
@@ -135,13 +123,7 @@ class BertEncoder(nn.Module):
         device: Optional[torch.device] = None,
         keep_token_embeddings: bool = True,
     ) -> Dict[str, Any]:
-        """Full pipeline for one raw text (debugging / inspection).
 
-        Returns token ids, attention mask, token strings, contextual token
-        representations (optional, not retained by default users of this
-        helper for inference) and the [CLS] embedding — i.e. the actual
-        intermediate representations of the encoder.
-        """
         encoded = tokenizer.encode(
             text, max_length=max_length, padding=False, truncation=True, return_tensors="pt"
         )

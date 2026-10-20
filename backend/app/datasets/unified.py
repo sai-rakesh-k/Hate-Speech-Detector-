@@ -1,10 +1,3 @@
-"""Dataset-agnostic example container and JSONL helpers.
-
-Every dataset adapter converts raw records into :class:`UnifiedExample`, the
-common internal representation. Fields that a dataset does not annotate stay
-explicitly ``None`` — nothing is ever fabricated.
-"""
-
 from __future__ import annotations
 
 import json
@@ -15,28 +8,6 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 @dataclass
 class UnifiedExample:
-    """One instance in the common internal format.
-
-    Attributes
-    ----------
-    id:
-        Stable identifier (prefixed per dataset, e.g. ``cc-train-17``).
-    current_text:
-        The comment being classified.
-    context_text:
-        Previous comment / conversational context (``None`` when absent).
-    hate_label:
-        Canonical hate label for the dataset's label set
-        (HateXplain: hate/offensive/normal; Counter Context: its own set).
-    target_label / reason_label:
-        Canonical target / reason category — ``None`` when not annotated.
-    rationale_labels:
-        0/1 flags aligned to the **whitespace tokens** of ``current_text``
-        (``None`` when not annotated). Subword alignment happens in
-        :mod:`app.datasets.tokenizer`.
-    metadata:
-        Anything else worth keeping (original labels, split, provenance).
-    """
 
     id: str
     current_text: str
@@ -47,7 +18,6 @@ class UnifiedExample:
     rationale_labels: Optional[List[int]] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-    # --- convenience ----------------------------------------------------------
     def has_context(self) -> bool:
         return bool(self.context_text and self.context_text.strip())
 
@@ -60,7 +30,6 @@ class UnifiedExample:
     def has_rationale(self) -> bool:
         return self.rationale_labels is not None
 
-    # --- (de)serialisation ------------------------------------------------------
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 

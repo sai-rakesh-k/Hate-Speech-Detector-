@@ -1,20 +1,3 @@
-"""Full model: shared BERT → context interaction → multi-task heads.
-
-Architecture (see README)::
-
-    current comment ─┐
-                     ├─ shared BERT ─→ E_c, E_p ─→ interaction ─→ final representation
-    previous context ┘       │
-                             ▼
-         ┌───────────────┬───────────────┬──────────────────┐
-         ▼               ▼               ▼                  ▼
-     hate head      target head     reason head     evidence head (token-level)
-                                    + contrastive projection (training only)
-
-Every component can be switched off via constructor flags — the ablation
-experiments rely on this (see ``evaluation/ablation.py``).
-"""
-
 from __future__ import annotations
 
 from typing import Any, Dict, Optional
@@ -141,7 +124,6 @@ class FullModel(nn.Module):
                 e_p = e_p * context_present.to(e_p.dtype).unsqueeze(-1)
         return e_c, e_p, token_states
 
-    # --- forward ---------------------------------------------------------------------
     def forward(
         self,
         input_ids: Optional[torch.Tensor] = None,
@@ -189,7 +171,6 @@ class FullModel(nn.Module):
             )
         return outputs
 
-    # --- contrastive training helper ----------------------------------------------
     def contrastive_embeddings(
         self,
         input_ids: torch.Tensor,

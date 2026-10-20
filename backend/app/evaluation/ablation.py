@@ -1,20 +1,3 @@
-"""Ablation experiment definitions and runner (project spec §21).
-
-==============================================  ======================================
-Experiment                                      Description
-==============================================  ======================================
-``exp1_baseline``                               BERT only (no context)
-``exp2_bert_context``                           BERT + context (concatenation, no D/M interaction)
-``exp3_interaction``                            BERT + context interaction ``[E_c;E_p;D;M]`` → MLP
-``exp4_contrastive``                            + contrastive learning (InfoNCE)
-``exp5_full``                                   Full multi-task model (hate + target [+ reason])
-``exp6_evidence``                               Full model + attribution-based evidence evaluation
-==============================================  ======================================
-
-Results are stored as machine-readable JSON in ``experiments/`` plus a CSV
-summary. The runner only *reports* numbers — it never claims that context or
-contrastive learning improved anything without experimental evidence.
-"""
 
 from __future__ import annotations
 
